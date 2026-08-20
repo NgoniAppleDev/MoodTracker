@@ -6,12 +6,14 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct MoodTrackerApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MoodSelectionScreen()
         }
+        .modelContainer(for: SavedMood.self)
     }
 }

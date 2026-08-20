@@ -9,17 +9,20 @@ import SwiftUI
 
 struct MoodSlider: View {
     
-    @Binding var moodValue: Double
+    var viewModel: ModelSelectionScreenViewModel
     
     private let size: CGFloat = 40
-    private let steps = 5
+    private let steps = Mood.allCases.count
+    
     @State private var xValue: CGFloat = 0
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     
     var body: some View {
         GeometryReader { geometry in
             
             let trackWidth = geometry.size.width
-            let stepWidth = (trackWidth - size) / CGFloat(steps - 1)
+            let maxX = trackWidth - size
+            let stepWidth = maxX / CGFloat(steps - 1)
             
             ZStack(alignment: .leading) {
                 
@@ -34,18 +37,23 @@ struct MoodSlider: View {
                     .foregroundStyle(.white)
                     .shadow(radius: 1)
                     .offset(x: xValue)
-                    .gesture(DragGesture().onChanged { value in
-                                let minX: CGFloat = 0
-                                let maxX = trackWidth - size
-                                let currentX = value.location.x
-                                let clampedX = min(max(minX, currentX), maxX)
-                        
-                                let step = round(clampedX / stepWidth)
-                                self.xValue = clampedX
-//                                self.xValue = step * stepWidth
-                                self.moodValue = Double(step)
-                            }
+                    .gesture(
+                        DragGesture().onChanged { value in
+                            viewModel.updateMoodValue(
+                                    sliderXValue: value.location.x,
+                                    stepWidth: stepWidth,
+                                    size: size,
+                                    trackWidth: trackWidth,
+                                    reduceMotion: reduceMotion
+                                )
+                            
+                            let snappedX = CGFloat(viewModel.moodValue) * stepWidth
+                            self.xValue = snappedX
+                        }
                     )
+            }
+            .onAppear {
+                self.xValue = CGFloat(viewModel.moodValue) * stepWidth
             }
         }
         .frame(height: size)
@@ -53,6 +61,6 @@ struct MoodSlider: View {
 }
 
 #Preview(traits: .sizeThatFitsLayout) {
-    MoodSlider(moodValue: .constant(0.5))
+    MoodSlider(viewModel: ModelSelectionScreenViewModel())
         .padding()
 }
