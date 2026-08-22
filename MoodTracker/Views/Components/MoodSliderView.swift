@@ -1,21 +1,21 @@
 //
-//  MoodSlider.swift
+//  MoodSliderView.swift
 //  MoodTracker
 //
-//  Created by Ngoni Katsidzira  on 20/8/2026.
+//  Created by Ngoni Katsidzira  on 22/8/2026.
 //
 
 import SwiftUI
+import SwiftData
 
-struct MoodSlider: View {
+struct MoodSliderView: View {
     
-    var viewModel: ModelSelectionScreenViewModel
+    var viewModel: MoodTrackingViewModel
     
     private let size: CGFloat = 40
-    private let steps = Mood.allCases.count
+    private let steps = Mood.allCases.count - 1 // excluding the unknown case...
     
     @State private var xValue: CGFloat = 0
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     
     var body: some View {
         GeometryReader { geometry in
@@ -34,18 +34,16 @@ struct MoodSlider: View {
                 
                 Circle()
                     .frame(width: size, height: size)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(viewModel.selectedMood.color.gradient)
                     .shadow(radius: 1)
                     .offset(x: xValue)
                     .gesture(
                         DragGesture().onChanged { value in
                             viewModel.updateMoodValue(
-                                    sliderXValue: value.location.x,
-                                    stepWidth: stepWidth,
-                                    size: size,
-                                    trackWidth: trackWidth,
-                                    reduceMotion: reduceMotion
-                                )
+                                sliderXValue: value.location.x,
+                                stepWidth: stepWidth,
+                                maxX: maxX
+                            )
                             
                             let snappedX = CGFloat(viewModel.moodValue) * stepWidth
                             self.xValue = snappedX
@@ -60,7 +58,6 @@ struct MoodSlider: View {
     }
 }
 
-#Preview(traits: .sizeThatFitsLayout) {
-    MoodSlider(viewModel: ModelSelectionScreenViewModel())
-        .padding()
+#Preview {
+    MoodSliderView(viewModel: .init(context: PreviewContainer.make().mainContext))
 }

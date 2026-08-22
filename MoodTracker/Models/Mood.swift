@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-enum Mood: String, CaseIterable, Hashable, Codable {
+enum Mood: String, CaseIterable, Hashable, Codable, Identifiable {
     case extremelyUnpleasant = "Extremely Unpleasant"
     case veryUnpleasant = "Very UnPleasant"
     case unpleasant = "Unpleasant"
@@ -17,6 +17,9 @@ enum Mood: String, CaseIterable, Hashable, Codable {
     case pleasant = "Pleasant"
     case veryPleasant = "Very Pleasant"
     case extremelyPleasant = "Extremely Pleasant"
+    case unknown = "Unknown"
+    
+    var id: Self { self }
     
     var color: Color {
         switch self {
@@ -38,6 +41,8 @@ enum Mood: String, CaseIterable, Hashable, Codable {
             Color(.veryPleasant)
         case .extremelyPleasant:
             Color(.extremelyPleasant)
+        case .unknown:
+            Color(.systemBackground)
         }
     }
     
@@ -61,6 +66,8 @@ enum Mood: String, CaseIterable, Hashable, Codable {
             Image(.veryPleasant)
         case .extremelyPleasant:
             Image(.extremelyPleasant)
+        case .unknown:
+            Image(.wink)
         }
     }
 }
