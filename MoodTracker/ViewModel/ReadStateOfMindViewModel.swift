@@ -66,6 +66,10 @@ class ReadStateOfMindViewModel {
     
     // MARK: navigating moods
     
+    func updateLocalSavedMoods(_ mood: Mood, onDate date: Date) {
+        self.savedMoods[date.normalizedDate] = mood
+    }
+    
     func fetchSavedMoods() {
         
         do {

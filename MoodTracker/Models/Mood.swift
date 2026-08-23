@@ -21,6 +21,10 @@ enum Mood: String, CaseIterable, Hashable, Codable, Identifiable {
     
     var id: Self { self }
     
+    static var validCases: [Mood] {
+        allCases.filter { $0 != .unknown }
+    }
+    
     var color: Color {
         switch self {
         case .extremelyUnpleasant:
@@ -70,4 +74,5 @@ enum Mood: String, CaseIterable, Hashable, Codable, Identifiable {
             Image(.wink)
         }
     }
+
 }

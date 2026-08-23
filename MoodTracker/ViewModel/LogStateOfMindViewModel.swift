@@ -14,12 +14,11 @@ class LogStateOfMindViewModel {
     
     private let context: ModelContext
     
-    var moodValue: Double = 4
+    var moodValence: Double = 0.5
     
     var selectedMood: Mood {
-        let index = Int(round(moodValue))
-        let allValidCases = Mood.allCases.filter { $0 != .unknown }
-        return allValidCases[index]
+        let index = Int(round(moodValence * Double(Mood.validCases.count - 1)))
+        return Mood.validCases[index]
     }
     
     init(context: ModelContext) {
@@ -31,22 +30,39 @@ class LogStateOfMindViewModel {
         let clampedX = min(max(0, sliderXValue), maxX)
         let step = round(clampedX / stepWidth)
         
-        moodValue = step
+        moodValence = step / Double(Mood.validCases.count - 1)
     }
     
-    func saveMood(_ mood: Mood? = nil, onDate date: Date = .now) {
+    @discardableResult
+    func saveMood(_ mood: Mood? = nil, onDate date: Date = .now) -> Bool {
         
-        if let existingMood =
-            try? context.fetch(FetchDescriptor<SavedMood>()).first(where: { Calendar.current.isDate($0.date, inSameDayAs: date.normalizedDate) }) {
+        do {
+            if let existingMood =
+                try context.fetch(FetchDescriptor<SavedMood>()).first(where: { Calendar.current.isDate($0.date, inSameDayAs: date.normalizedDate) }) {
+                
+                existingMood.mood = mood ?? selectedMood
+                
+            } else {
+                
+                let savedMood = SavedMood(date: date.normalizedDate, mood: mood ?? selectedMood)
+                context.insert(savedMood)
+            }
             
-            existingMood.mood = mood ?? selectedMood
+            try context.save()
             
-        } else {
-            
-            let savedMood = SavedMood(date: date.normalizedDate, mood: mood ?? selectedMood)
-            context.insert(savedMood)
+            return true
+        } catch {
+            return false
+        }
+    }
+    
+    func updateSelectedMood(_ mood: Mood) {
+        
+        guard let index = Mood.validCases.firstIndex(of: mood) else {
+            moodValence = 0.5
+            return
         }
         
-        try? context.save()
+        self.moodValence = Double(index) / Double(Mood.validCases.count - 1)
     }
 }

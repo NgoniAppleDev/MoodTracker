@@ -13,7 +13,7 @@ struct MoodSliderView: View {
     var viewModel: LogStateOfMindViewModel
     
     private let size: CGFloat = 40
-    private let steps = Mood.allCases.count - 1 // excluding the unknown case...
+    private let steps = Mood.validCases.count
     
     @State private var xValue: CGFloat = 0
     
@@ -45,13 +45,16 @@ struct MoodSliderView: View {
                                 maxX: maxX
                             )
                             
-                            let snappedX = CGFloat(viewModel.moodValue) * stepWidth
+                            let snappedX = viewModel.moodValence * maxX
                             self.xValue = snappedX
+                            
+                            print(viewModel.moodValence)
+                            
                         }
                     )
             }
             .onAppear {
-                self.xValue = CGFloat(viewModel.moodValue) * stepWidth
+                self.xValue = viewModel.moodValence * maxX
             }
         }
         .frame(height: size)

@@ -22,6 +22,13 @@ struct MoodHistoryView: View {
                 Spacer()
             }
             .padding()
+            .sheet(item: $tappedDate) { the_TappedDate in
+                LogStateOfMindView(selectedMood: the_TappedDate.mood, selectedDate: the_TappedDate.date) { mood, date in
+                    viewModel.updateLocalSavedMoods(mood, onDate: date)
+                    tappedDate = nil
+                }
+                .presentationDragIndicator(.visible)
+            }
             .navigationTitle("Mood History")
             .navigationBarTitleDisplayMode(.inline)
         }
@@ -131,4 +138,5 @@ extension MoodHistoryView {
     MoodHistoryView()
         .modelContainer(container)
         .environment(ReadStateOfMindViewModel(context: container.mainContext))
+        .environment(LogStateOfMindViewModel(context: container.mainContext))
 }

@@ -22,7 +22,9 @@ struct MainTabView: View {
         
         TabView {
             Tab("Mood Selection", systemImage: "square.and.pencil") {
-                LogStateOfMindView()
+                LogStateOfMindView() { mood, date in
+                    readStateOfMindViewModel.updateLocalSavedMoods(mood, onDate: date)
+                }
             }
             
             Tab("Mood History", systemImage: "list.dash") {

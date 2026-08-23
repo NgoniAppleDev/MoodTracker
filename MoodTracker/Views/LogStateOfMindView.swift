@@ -13,6 +13,11 @@ struct LogStateOfMindView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(LogStateOfMindViewModel.self) private var viewModel
     
+    var selectedMood: Mood? = nil
+    var selectedDate: Date = .now
+    
+    var onSave: ((Mood, Date) -> Void)?
+    
     var body: some View {
         BackgroundView(selectedMood: viewModel.selectedMood) {
             
@@ -38,6 +43,11 @@ struct LogStateOfMindView: View {
                 
             }
             .padding(40)
+            .onAppear {
+                if let selectedMood {
+                    viewModel.updateSelectedMood(selectedMood)
+                }
+            }
             
         }
     }
@@ -80,7 +90,9 @@ extension LogStateOfMindView {
     private func SaveButton() -> some View {
         
         Button {
-            viewModel.saveMood()
+            if viewModel.saveMood(selectedMood, onDate: selectedDate) {
+                onSave?(viewModel.selectedMood, selectedDate)
+            }
         } label: {
             Text("Save")
                 .font(.headline)
