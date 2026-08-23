@@ -44,9 +44,16 @@ extension MoodHistoryView {
             
             Spacer()
             
-            Text(viewModel.formattedSelectedDate)
-                .font(.largeTitle)
-                .foregroundStyle(Color(.label))
+            VStack {
+                Text(viewModel.formattedSelectedDate)
+                    .font(.largeTitle)
+                    .foregroundStyle(Color(.label))
+                
+                if !viewModel.isShowingCurrentMonth {
+                    Button("Today", action: viewModel.goToCurrentMonth)
+                        .padding(.bottom)
+                }
+            }
             
             Spacer()
             
@@ -58,6 +65,7 @@ extension MoodHistoryView {
             }
         }
         .tint(Color.accent)
+        .padding(.bottom)
     }
     
     @ViewBuilder

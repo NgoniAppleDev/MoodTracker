@@ -48,6 +48,10 @@ class ReadStateOfMindViewModel {
         selectedDate.formatted(.dateTime.month(.wide).year())
     }
     
+    var isShowingCurrentMonth: Bool {
+        Calendar.current.isDate(selectedDate, equalTo: Date(), toGranularity: .month)
+    }
+    
     
     // MARK: - Initializer
     
@@ -91,6 +95,10 @@ class ReadStateOfMindViewModel {
 
     
     // MARK: navigating the calendar
+    
+    func goToCurrentMonth() {
+        self.selectedDate = .now
+    }
     
     func goBack(by factor: DateChangeFactor) {
         
