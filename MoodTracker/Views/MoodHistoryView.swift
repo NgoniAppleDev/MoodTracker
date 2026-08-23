@@ -10,20 +10,20 @@ import SwiftData
 
 struct MoodHistoryView: View {
     
-    @Environment(MoodTrackingViewModel.self) private var viewModel
+    @Environment(ReadStateOfMindViewModel.self) private var viewModel
     @State private var tappedDate: TappedDate?
     
     var body: some View {
-        VStack {
-            HeaderView()
-            CalendarView()
-        }
-        .padding()
-        .sheet(item: $tappedDate) { the_tappedDate in
-            MoodPickerSheet(tappedDate: the_tappedDate) { newMood in
-                viewModel.saveMood(newMood, onDate: the_tappedDate.date)
+        NavigationStack {
+            VStack {
+                HeaderView()
+                CalendarView()
+                
+                Spacer()
             }
-            .presentationDragIndicator(.visible)
+            .padding()
+            .navigationTitle("Mood History")
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }
@@ -122,5 +122,5 @@ extension MoodHistoryView {
     let container = PreviewContainer.make()
     MoodHistoryView()
         .modelContainer(container)
-        .environment(MoodTrackingViewModel(context: container.mainContext))
+        .environment(ReadStateOfMindViewModel(context: container.mainContext))
 }

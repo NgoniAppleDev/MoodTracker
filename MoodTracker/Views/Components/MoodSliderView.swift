@@ -10,7 +10,7 @@ import SwiftData
 
 struct MoodSliderView: View {
     
-    var viewModel: MoodTrackingViewModel
+    var viewModel: LogStateOfMindViewModel
     
     private let size: CGFloat = 40
     private let steps = Mood.allCases.count - 1 // excluding the unknown case...

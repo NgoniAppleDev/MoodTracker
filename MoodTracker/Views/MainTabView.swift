@@ -10,17 +10,19 @@ import SwiftData
 
 struct MainTabView: View {
     
-    @State private var viewModel: MoodTrackingViewModel
+    @State private var readStateOfMindViewModel: ReadStateOfMindViewModel
+    @State private var logStateOfMindViewModel: LogStateOfMindViewModel
     
     init(context: ModelContext) {
-        _viewModel = State(initialValue: MoodTrackingViewModel(context: context))
+        _readStateOfMindViewModel = State(initialValue: ReadStateOfMindViewModel(context: context))
+        _logStateOfMindViewModel = State(initialValue: LogStateOfMindViewModel(context: context))
     }
     
     var body: some View {
         
         TabView {
             Tab("Mood Selection", systemImage: "square.and.pencil") {
-                MoodSelectionScreen()
+                LogStateOfMindView()
             }
             
             Tab("Mood History", systemImage: "list.dash") {
@@ -28,7 +30,8 @@ struct MainTabView: View {
             }
         }
         .tint(Color(.label))
-        .environment(viewModel)
+        .environment(readStateOfMindViewModel)
+        .environment(logStateOfMindViewModel)
     }
 }
 
@@ -37,5 +40,6 @@ struct MainTabView: View {
     
     MainTabView(context: container.mainContext)
         .modelContainer(container)
-        .environment(MoodTrackingViewModel(context: container.mainContext))
+        .environment(ReadStateOfMindViewModel(context: container.mainContext))
+        .environment(LogStateOfMindViewModel(context: container.mainContext))
 }

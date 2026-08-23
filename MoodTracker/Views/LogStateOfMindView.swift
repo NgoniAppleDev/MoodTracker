@@ -1,5 +1,5 @@
 //
-//  MoodSelectionScreen.swift
+//  LogStateOfMindView.swift
 //  MoodTracker
 //
 //  Created by Ngoni Katsidzira  on 20/8/2026.
@@ -8,10 +8,10 @@
 import SwiftUI
 import SwiftData
 
-struct MoodSelectionScreen: View {
+struct LogStateOfMindView: View {
     
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(MoodTrackingViewModel.self) private var viewModel
+    @Environment(LogStateOfMindViewModel.self) private var viewModel
     
     var body: some View {
         BackgroundView(selectedMood: viewModel.selectedMood) {
@@ -46,7 +46,7 @@ struct MoodSelectionScreen: View {
 
 // MARK: - Components
 
-extension MoodSelectionScreen {
+extension LogStateOfMindView {
     
     @ViewBuilder
     private func BlobView() -> some View {
@@ -95,7 +95,8 @@ extension MoodSelectionScreen {
 #Preview {
     let container = PreviewContainer.make()
     
-    MoodSelectionScreen()
+    LogStateOfMindView()
         .modelContainer(container)
-        .environment(MoodTrackingViewModel(context: container.mainContext))
+        .environment(ReadStateOfMindViewModel(context: container.mainContext))
+        .environment(LogStateOfMindViewModel(context: container.mainContext))
 }
