@@ -15,14 +15,13 @@ struct MoodSliderView: View {
     private let size: CGFloat = 40
     private let steps = Mood.validCases.count
     
-    @State private var xValue: CGFloat = 0
-    
     var body: some View {
         GeometryReader { geometry in
             
             let trackWidth = geometry.size.width
             let maxX = trackWidth - size
             let stepWidth = maxX / CGFloat(steps - 1)
+            let xValueOffset = viewModel.moodValence * maxX
             
             ZStack(alignment: .leading) {
                 
@@ -36,7 +35,7 @@ struct MoodSliderView: View {
                     .frame(width: size, height: size)
                     .foregroundStyle(viewModel.selectedMood.color.gradient)
                     .shadow(radius: 1)
-                    .offset(x: xValue)
+                    .offset(x: xValueOffset)
                     .gesture(
                         DragGesture().onChanged { value in
                             viewModel.updateMoodValue(
@@ -44,18 +43,12 @@ struct MoodSliderView: View {
                                 stepWidth: stepWidth,
                                 maxX: maxX
                             )
-                            
-                            let snappedX = viewModel.moodValence * maxX
-                            self.xValue = snappedX
-                            
                         }
                     )
             }
-            .onAppear {
-                self.xValue = viewModel.moodValence * maxX
-            }
         }
         .frame(height: size)
+        .frame(maxWidth: .infinity)
     }
 }
 
