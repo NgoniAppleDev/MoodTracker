@@ -48,8 +48,6 @@ struct MoodSliderView: View {
                             let snappedX = viewModel.moodValence * maxX
                             self.xValue = snappedX
                             
-                            print(viewModel.moodValence)
-                            
                         }
                     )
             }
