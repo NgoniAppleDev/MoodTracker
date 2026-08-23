@@ -19,7 +19,7 @@ struct LogStateOfMindView: View {
     var onSave: ((Mood, Date) -> Void)?
     
     var body: some View {
-        BackgroundView(selectedMood: viewModel.selectedMood) {
+        BackgroundView(color: viewModel.selectedMoodInterpolatedColor) {
             
             VStack {
                 Text("How are you feeling today?")
@@ -70,7 +70,7 @@ extension LogStateOfMindView {
                     .scaledToFit()
                     .frame(width: proxy.size.width)
                     .animation(.none, value: viewModel.selectedMood)
-                    .shadow(color: viewModel.selectedMood.color, radius: 100)
+                    .shadow(color: viewModel.selectedMoodInterpolatedColor, radius: 100)
             }
         }
         .frame(height: size)
@@ -98,9 +98,9 @@ extension LogStateOfMindView {
             Text("Save")
                 .foregroundStyle(.white)
         }
-        .id(viewModel.selectedMood)
+        .id(viewModel.selectedMoodInterpolatedColor)
         .buttonStyle(.glassProminent)
-        .tint(viewModel.selectedMood.color)
+        .tint(viewModel.selectedMoodInterpolatedColor)
     }
 }
 

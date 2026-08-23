@@ -14,23 +14,31 @@ class LogStateOfMindViewModel {
     
     private let context: ModelContext
     
-    var moodValence: Double = 0.5
+    var moodValence: Double = 0
+    
+    var normalizedValence: Double {
+        (moodValence + 1) / 2
+    }
     
     var selectedMood: Mood {
-        let index = Int(round(moodValence * Double(Mood.validCases.count - 1)))
-        return Mood.validCases[index]
+        Mood.nearest(to: moodValence)
+    }
+    
+    var selectedMoodInterpolatedColor: Color {
+        Mood.interpolatedColor(for: moodValence)
     }
     
     init(context: ModelContext) {
         self.context = context
     }
     
-    func updateMoodValue(sliderXValue: CGFloat, stepWidth: CGFloat, maxX: CGFloat) {
+    func updateMoodValue(sliderXValue: CGFloat, maxX: CGFloat) {
         
         let clampedX = min(max(0, sliderXValue), maxX)
-        let step = round(clampedX / stepWidth)
         
-        moodValence = step / Double(Mood.validCases.count - 1)
+        let normalizedValue = clampedX / maxX
+        
+        moodValence = Double(normalizedValue * 2 - 1)
     }
     
     @discardableResult
@@ -59,10 +67,13 @@ class LogStateOfMindViewModel {
     func updateSelectedMood(_ mood: Mood) {
         
         guard let index = Mood.validCases.firstIndex(of: mood) else {
-            moodValence = 0.5
+            moodValence = 0
             return
         }
         
-        self.moodValence = Double(index) / Double(Mood.validCases.count - 1)
+        let normalizedValue = Double(index) / Double(Mood.validCases.count - 1)
+        
+        moodValence = (normalizedValue * 2) - 1
     }
+    
 }

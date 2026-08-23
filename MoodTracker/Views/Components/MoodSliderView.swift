@@ -20,10 +20,9 @@ struct MoodSliderView: View {
             
             let trackWidth = geometry.size.width
             let maxX = trackWidth - size
-            let stepWidth = maxX / CGFloat(steps - 1)
-            let xValueOffset = viewModel.moodValence * maxX
+            let xValueOffset = viewModel.normalizedValence * maxX
             
-            ZStack(alignment: .leading) {
+            return ZStack(alignment: .leading) {
                 
                 Capsule()
                     .frame(height: size)
@@ -33,14 +32,13 @@ struct MoodSliderView: View {
                 
                 Circle()
                     .frame(width: size, height: size)
-                    .foregroundStyle(viewModel.selectedMood.color.gradient)
+                    .foregroundStyle(viewModel.selectedMoodInterpolatedColor.gradient)
                     .shadow(radius: 1)
                     .offset(x: xValueOffset)
                     .gesture(
                         DragGesture().onChanged { value in
                             viewModel.updateMoodValue(
                                 sliderXValue: value.location.x,
-                                stepWidth: stepWidth,
                                 maxX: maxX
                             )
                         }

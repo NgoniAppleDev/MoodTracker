@@ -74,5 +74,41 @@ enum Mood: String, CaseIterable, Hashable, Codable, Identifiable {
             Image(.wink)
         }
     }
+    
+    static func nearest(to valence: Double) -> Mood {
+        let clampedValence = min(max(valence, -1), 1)
+        
+        let normalized = (clampedValence + 1) / 2
+        
+        let index = Int(
+            round(
+                normalized * Double(validCases.count - 1)
+            )
+        )
+        
+        return validCases[index]
+    }
 
+}
+
+extension Mood {
+    
+    static func interpolatedColor(for valence: Double) -> Color {
+        
+        let valence = min(max(valence, -1), 1)
+        
+        // Convert -1...1 → 0...1
+        let normalized = (valence + 1) / 2
+        
+        let colors = validCases.map(\.color)
+        
+        // Locate the two surrounding moods
+        let scaled = normalized * Double(colors.count - 1)
+        let lowerIndex = Int(floor(scaled))
+        let upperIndex = min(lowerIndex + 1, colors.count - 1)
+        
+        let fraction = scaled - Double(lowerIndex)
+        
+        return colors[lowerIndex].interpolated(to: colors[upperIndex], fraction: fraction)
+    }
 }

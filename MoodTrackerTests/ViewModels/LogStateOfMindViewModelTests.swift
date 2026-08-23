@@ -19,7 +19,7 @@ struct LogStateOfMindViewModelTests {
         let container = PreviewContainer.make()
         let viewModel = LogStateOfMindViewModel(context: container.mainContext)
         
-        #expect(viewModel.moodValence == 0.5)
+        #expect(viewModel.moodValence == 0)
         #expect(viewModel.selectedMood == .neutral)
     }
     
@@ -32,12 +32,12 @@ struct LogStateOfMindViewModelTests {
         viewModel.updateSelectedMood(.pleasant)
         
         #expect(viewModel.selectedMood == .pleasant)
-        #expect(viewModel.moodValence == 0.75)
+        #expect(viewModel.moodValence == 0.5)
     }
     
     @Test(arguments: [
         (Mood.extremelyPleasant, 1.0),
-        (Mood.extremelyUnpleasant, 0.0)
+        (Mood.extremelyUnpleasant, -1.0)
     ])
     func updateSelectedMoodHandlesExtremes(values: (mood: Mood, valence: Double)) {
         
@@ -51,12 +51,12 @@ struct LogStateOfMindViewModelTests {
     }
     
     @Test(arguments: [
-        (0, 50, 400, 0.0, Mood.extremelyUnpleasant),
-        (200, 50, 400, 0.5, .neutral),
-        (400, 50, 400, 1.0, .extremelyPleasant)
+        (0, 400, -1.0, Mood.extremelyUnpleasant),
+        (200, 400, 0.0, .neutral),
+        (400, 400, 1.0, .extremelyPleasant)
     ])
     func `moodSlider position aligns correctly with corresponding mood`(
-        values: (sliderXValue: CGFloat, stepWidth: CGFloat, maxX: CGFloat, valence: Double, mood: Mood)
+        values: (sliderXValue: CGFloat, maxX: CGFloat, valence: Double, mood: Mood)
     ) {
         
         let container = PreviewContainer.make()
@@ -64,7 +64,6 @@ struct LogStateOfMindViewModelTests {
         
         viewModel.updateMoodValue(
             sliderXValue: values.sliderXValue,
-            stepWidth: values.stepWidth,
             maxX: values.maxX
         )
         
@@ -73,11 +72,11 @@ struct LogStateOfMindViewModelTests {
     }
     
     @Test(arguments: [
-        (-100, 50, 400, 0),
-        (999, 50, 400, 1)
+        (-100, 400, -1),
+        (999, 400, 1)
     ])
     func `slider position overflow correctly clamps the values`(
-        values: (sliderXValue: CGFloat, stepWidth: CGFloat, maxX: CGFloat, valence: Double)
+        values: (sliderXValue: CGFloat, maxX: CGFloat, valence: Double)
     ) {
         
         let container = PreviewContainer.make()
@@ -85,7 +84,6 @@ struct LogStateOfMindViewModelTests {
         
         viewModel.updateMoodValue(
             sliderXValue: values.sliderXValue,
-            stepWidth: values.stepWidth,
             maxX: values.maxX
         )
         
@@ -131,6 +129,19 @@ struct LogStateOfMindViewModelTests {
         
         #expect(firstSavedMood.mood == .pleasant)
         
+    }
+    
+    @Test
+    func nearestMoodMapsValence() {
+        #expect(Mood.nearest(to: 0) == .neutral)
+        #expect(Mood.nearest(to: 0.5) == .pleasant)
+        #expect(Mood.nearest(to: 1) == .extremelyPleasant)
+    }
+    
+    @Test
+    func nearestMoodClampsValence() {
+        #expect(Mood.nearest(to: -1) == .extremelyUnpleasant)
+        #expect(Mood.nearest(to: 2) == .extremelyPleasant)
     }
 
 }

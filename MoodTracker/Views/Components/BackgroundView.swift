@@ -9,12 +9,12 @@ import SwiftUI
 
 struct BackgroundView<Content: View>: View {
     
-    var selectedMood: Mood
+    var color: Color
     @ViewBuilder var content: () -> Content
     
     var body: some View {
         ZStack {
-            selectedMood.color
+            color
                 .ignoresSafeArea()
                 .opacity(0.2)
             
@@ -24,7 +24,7 @@ struct BackgroundView<Content: View>: View {
 }
 
 #Preview {
-    BackgroundView(selectedMood: .extremelyPleasant) {
+    BackgroundView(color: .blue) {
         Text("Hello, Background!")
     }
 }
