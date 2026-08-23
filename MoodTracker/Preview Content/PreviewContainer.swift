@@ -8,7 +8,6 @@
 import SwiftData
 import Foundation
 
-#if DEBUG
 enum PreviewContainer {
     
     static func make() -> ModelContainer {
@@ -23,4 +22,3 @@ enum PreviewContainer {
         }
     }
 }
-#endif

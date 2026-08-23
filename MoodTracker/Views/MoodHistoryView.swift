@@ -29,6 +29,13 @@ struct MoodHistoryView: View {
                         tappedDate = nil
                     }
                     .presentationDragIndicator(.visible)
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Cancel", role: .cancel) {
+                                tappedDate = nil
+                            }
+                        }
+                    }
                 }
             }
             .navigationTitle("Mood History")

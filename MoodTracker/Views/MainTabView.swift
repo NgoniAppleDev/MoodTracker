@@ -22,8 +22,10 @@ struct MainTabView: View {
         
         TabView {
             Tab("Mood Selection", systemImage: "square.and.pencil") {
-                LogStateOfMindView(selectedMood: .extremelyPleasant) { mood, date in
-                    readStateOfMindViewModel.updateLocalSavedMoods(mood, onDate: date)
+                NavigationStack {
+                    LogStateOfMindView() { mood, date in
+                        readStateOfMindViewModel.updateLocalSavedMoods(mood, onDate: date)
+                    }
                 }
             }
             

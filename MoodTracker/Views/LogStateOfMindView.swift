@@ -37,15 +37,16 @@ struct LogStateOfMindView: View {
                 
                 MoodSliderView(viewModel: viewModel)
                 
-                Spacer()
-                
-                SaveButton()
-                
             }
             .padding(40)
             .onAppear {
                 if let selectedMood {
                     viewModel.updateSelectedMood(selectedMood)
+                }
+            }
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    SaveButton()
                 }
             }
             
@@ -95,20 +96,21 @@ extension LogStateOfMindView {
             }
         } label: {
             Text("Save")
-                .font(.headline)
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(viewModel.selectedMood.color.gradient, in: .capsule)
                 .foregroundStyle(.white)
         }
+        .id(viewModel.selectedMood)
+        .buttonStyle(.glassProminent)
+        .tint(viewModel.selectedMood.color)
     }
 }
 
 #Preview {
     let container = PreviewContainer.make()
     
-    LogStateOfMindView()
-        .modelContainer(container)
-        .environment(ReadStateOfMindViewModel(context: container.mainContext))
-        .environment(LogStateOfMindViewModel(context: container.mainContext))
+    NavigationStack {
+        LogStateOfMindView()
+            .modelContainer(container)
+            .environment(ReadStateOfMindViewModel(context: container.mainContext))
+            .environment(LogStateOfMindViewModel(context: container.mainContext))
+    }
 }
