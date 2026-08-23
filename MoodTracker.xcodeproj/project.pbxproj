@@ -6,11 +6,27 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXContainerItemProxy section */
+		4E87904D303AD47A00C38CD1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4EBF8CCF303769910017520E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4EBF8CD6303769910017520E;
+			remoteInfo = MoodTracker;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		4E879049303AD47A00C38CD1 /* MoodTrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MoodTrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4EBF8CD7303769910017520E /* MoodTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MoodTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		4E87904A303AD47A00C38CD1 /* MoodTrackerTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = MoodTrackerTests;
+			sourceTree = "<group>";
+		};
 		4EBF8CD9303769910017520E /* MoodTracker */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = MoodTracker;
@@ -19,6 +35,13 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		4E879046303AD47A00C38CD1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4EBF8CD4303769910017520E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -33,6 +56,7 @@
 			isa = PBXGroup;
 			children = (
 				4EBF8CD9303769910017520E /* MoodTracker */,
+				4E87904A303AD47A00C38CD1 /* MoodTrackerTests */,
 				4EBF8CD8303769910017520E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -41,6 +65,7 @@
 			isa = PBXGroup;
 			children = (
 				4EBF8CD7303769910017520E /* MoodTracker.app */,
+				4E879049303AD47A00C38CD1 /* MoodTrackerTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -48,6 +73,29 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		4E879048303AD47A00C38CD1 /* MoodTrackerTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4E87904F303AD47A00C38CD1 /* Build configuration list for PBXNativeTarget "MoodTrackerTests" */;
+			buildPhases = (
+				4E879045303AD47A00C38CD1 /* Sources */,
+				4E879046303AD47A00C38CD1 /* Frameworks */,
+				4E879047303AD47A00C38CD1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				4E87904E303AD47A00C38CD1 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				4E87904A303AD47A00C38CD1 /* MoodTrackerTests */,
+			);
+			name = MoodTrackerTests;
+			packageProductDependencies = (
+			);
+			productName = MoodTrackerTests;
+			productReference = 4E879049303AD47A00C38CD1 /* MoodTrackerTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		4EBF8CD6303769910017520E /* MoodTracker */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4EBF8CE2303769940017520E /* Build configuration list for PBXNativeTarget "MoodTracker" */;
@@ -80,6 +128,11 @@
 				LastSwiftUpdateCheck = 2630;
 				LastUpgradeCheck = 2630;
 				TargetAttributes = {
+					4E879048303AD47A00C38CD1 = {
+						CreatedOnToolsVersion = 26.3;
+						LastSwiftMigration = 2630;
+						TestTargetID = 4EBF8CD6303769910017520E;
+					};
 					4EBF8CD6303769910017520E = {
 						CreatedOnToolsVersion = 26.3;
 					};
@@ -100,11 +153,19 @@
 			projectRoot = "";
 			targets = (
 				4EBF8CD6303769910017520E /* MoodTracker */,
+				4E879048303AD47A00C38CD1 /* MoodTrackerTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		4E879047303AD47A00C38CD1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4EBF8CD5303769910017520E /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -115,6 +176,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		4E879045303AD47A00C38CD1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4EBF8CD3303769910017520E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -124,7 +192,60 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		4E87904E303AD47A00C38CD1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4EBF8CD6303769910017520E /* MoodTracker */;
+			targetProxy = 4E87904D303AD47A00C38CD1 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		4E879050303AD47A00C38CD1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 43PKX39644;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ngonikatsidzira.MoodTrackerTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MoodTracker.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MoodTracker";
+			};
+			name = Debug;
+		};
+		4E879051303AD47A00C38CD1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 43PKX39644;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ngonikatsidzira.MoodTrackerTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MoodTracker.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MoodTracker";
+			};
+			name = Release;
+		};
 		4EBF8CE0303769940017520E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -323,6 +444,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		4E87904F303AD47A00C38CD1 /* Build configuration list for PBXNativeTarget "MoodTrackerTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4E879050303AD47A00C38CD1 /* Debug */,
+				4E879051303AD47A00C38CD1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		4EBF8CD2303769910017520E /* Build configuration list for PBXProject "MoodTracker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

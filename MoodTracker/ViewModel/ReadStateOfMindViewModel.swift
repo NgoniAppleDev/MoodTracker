@@ -94,7 +94,7 @@ class ReadStateOfMindViewModel {
     
     func moodForDay(_ date: Date) -> Mood {
         
-        savedMoods[date] ?? .unknown
+        savedMoods[date.normalizedDate] ?? .unknown
     }
 
     
