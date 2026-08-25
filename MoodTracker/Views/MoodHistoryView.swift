@@ -24,10 +24,7 @@ struct MoodHistoryView: View {
             .padding()
             .sheet(item: $tappedDate) { the_TappedDate in
                 NavigationStack {
-                    LogStateOfMindView(selectedMood: the_TappedDate.mood, selectedDate: the_TappedDate.date) { mood, date in
-                        viewModel.updateLocalSavedMoods(mood, onDate: date)
-                        tappedDate = nil
-                    }
+                    LogStateOfMindView(selectedMood: the_TappedDate.mood, selectedDate: the_TappedDate.date)
                     .presentationDragIndicator(.visible)
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) {
@@ -117,7 +114,7 @@ extension MoodHistoryView {
         ForEach(viewModel.monthDays, id: \.self) { dayOfMonth in
             let moodForDay = viewModel.moodForDay(dayOfMonth)
             
-            return Button {
+            Button {
                 self.tappedDate = .init(date: dayOfMonth, mood: moodForDay)
             } label: {
                 ZStack {
@@ -143,9 +140,6 @@ extension MoodHistoryView {
 
 
 #Preview {
-    let container = PreviewContainer.make()
     MoodHistoryView()
-        .modelContainer(container)
-        .environment(ReadStateOfMindViewModel(context: container.mainContext))
-        .environment(LogStateOfMindViewModel(context: container.mainContext))
+        .environment(\.healthKitManager, .shared)
 }

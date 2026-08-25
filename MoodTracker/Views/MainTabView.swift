@@ -13,9 +13,9 @@ struct MainTabView: View {
     @State private var readStateOfMindViewModel: ReadStateOfMindViewModel
     @State private var logStateOfMindViewModel: LogStateOfMindViewModel
     
-    init(context: ModelContext) {
-        _readStateOfMindViewModel = State(initialValue: ReadStateOfMindViewModel(context: context))
-        _logStateOfMindViewModel = State(initialValue: LogStateOfMindViewModel(context: context))
+    init(healthKitManager: HealthKitManager = .shared) {
+        _readStateOfMindViewModel = State(initialValue: ReadStateOfMindViewModel(healthKitManager: healthKitManager))
+        _logStateOfMindViewModel = State(initialValue: LogStateOfMindViewModel(healthKitManager: healthKitManager))
     }
     
     var body: some View {
@@ -23,14 +23,16 @@ struct MainTabView: View {
         TabView {
             Tab("Mood Selection", systemImage: "square.and.pencil") {
                 NavigationStack {
-                    LogStateOfMindView() { mood, date in
-                        readStateOfMindViewModel.updateLocalSavedMoods(mood, onDate: date)
-                    }
+                    LogStateOfMindView()
                 }
             }
             
             Tab("Mood History", systemImage: "list.dash") {
                 MoodHistoryView()
+            }
+            
+            Tab("Settings", systemImage: "gear") {
+                SettingsView()
             }
         }
         .tint(Color(.label))
@@ -40,10 +42,6 @@ struct MainTabView: View {
 }
 
 #Preview {
-    let container = PreviewContainer.make()
-    
-    MainTabView(context: container.mainContext)
-        .modelContainer(container)
-        .environment(ReadStateOfMindViewModel(context: container.mainContext))
-        .environment(LogStateOfMindViewModel(context: container.mainContext))
+    MainTabView()
+        .environment(\.healthKitManager, .shared)
 }

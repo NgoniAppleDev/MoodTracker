@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import SwiftData
 
 @main
 struct MoodTrackerApp: App {
@@ -14,6 +13,5 @@ struct MoodTrackerApp: App {
         WindowGroup {
             RootView()
         }
-        .modelContainer(for: SavedMood.self)
     }
 }

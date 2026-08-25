@@ -74,24 +74,31 @@ enum Mood: String, CaseIterable, Hashable, Codable, Identifiable {
             Image(.wink)
         }
     }
-    
-    static func nearest(to valence: Double) -> Mood {
-        let clampedValence = min(max(valence, -1), 1)
-        
-        let normalized = (clampedValence + 1) / 2
-        
-        let index = Int(
-            round(
-                normalized * Double(validCases.count - 1)
-            )
-        )
-        
-        return validCases[index]
-    }
 
 }
 
+
+
 extension Mood {
+    
+    var valence: Double {
+        switch self {
+        case .extremelyUnpleasant: -1.0
+        case .veryUnpleasant:      -0.75
+        case .unpleasant:          -0.5
+        case .slightlyUnpleasant: -0.25
+        case .neutral:              0.0
+        case .slightlyPleasant:     0.25
+        case .pleasant:             0.5
+        case .veryPleasant:         0.75
+        case .extremelyPleasant:    1.0
+        case .unknown:              0.0
+        }
+    }
+    
+    static func nearest(to valence: Double) -> Mood {
+        validCases.min { abs($0.valence - valence) < abs($1.valence - valence) }!
+    }
     
     static func interpolatedColor(for valence: Double) -> Color {
         

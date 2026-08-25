@@ -51,5 +51,5 @@ struct MoodSliderView: View {
 }
 
 #Preview {
-    MoodSliderView(viewModel: .init(context: PreviewContainer.make().mainContext))
+    MoodSliderView(viewModel: .init(healthKitManager: .shared))
 }

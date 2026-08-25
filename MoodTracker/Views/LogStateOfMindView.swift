@@ -16,8 +16,6 @@ struct LogStateOfMindView: View {
     var selectedMood: Mood? = nil
     var selectedDate: Date = .now
     
-    var onSave: ((Mood, Date) -> Void)?
-    
     var body: some View {
         BackgroundView(color: viewModel.selectedMoodInterpolatedColor) {
             
@@ -91,8 +89,8 @@ extension LogStateOfMindView {
     private func SaveButton() -> some View {
         
         Button {
-            if viewModel.saveMood(selectedMood, onDate: selectedDate) {
-                onSave?(viewModel.selectedMood, selectedDate)
+            Task {
+                await viewModel.saveMood(selectedMood, onDate: selectedDate)
             }
         } label: {
             Text("Save")
@@ -105,12 +103,8 @@ extension LogStateOfMindView {
 }
 
 #Preview {
-    let container = PreviewContainer.make()
-    
     NavigationStack {
         LogStateOfMindView()
-            .modelContainer(container)
-            .environment(ReadStateOfMindViewModel(context: container.mainContext))
-            .environment(LogStateOfMindViewModel(context: container.mainContext))
+            .environment(\.healthKitManager, .shared)
     }
 }

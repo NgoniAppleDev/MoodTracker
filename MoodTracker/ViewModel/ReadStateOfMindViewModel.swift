@@ -5,9 +5,11 @@
 //  Created by Ngoni Katsidzira  on 20/8/2026.
 //
 
+import HealthKit
 import SwiftUI
 import Observation
 import SwiftData
+import os
 
 
 enum DateChangeFactor {
@@ -22,9 +24,11 @@ class ReadStateOfMindViewModel {
     
     // MARK: - Properties
     
-    private let context: ModelContext
+    private let healthKitManager: HealthKitManager
 
-    private var savedMoods: [Date: Mood] = [:]
+    private var savedStatesOfMind: [Date: [HKStateOfMind]] {
+        Dictionary(grouping: healthKitManager.stateOfMindData, by: { $0.startDate.normalizedDate })
+    }
     
     var selectedDate = Date() {
         didSet {
@@ -55,48 +59,29 @@ class ReadStateOfMindViewModel {
     
     // MARK: - Initializer
     
-    init(context: ModelContext) {
-        self.context = context
-        fetchSavedMoods()
+    init(healthKitManager: HealthKitManager) {
+        self.healthKitManager = healthKitManager
         updateMonthDays()
     }
     
     
     // MARK: - Methods
     
-    // MARK: navigating moods
     
-    func updateLocalSavedMoods(_ mood: Mood, onDate date: Date) {
-        self.savedMoods[date.normalizedDate] = mood
-    }
-    
-    func fetchSavedMoods() {
-        
-        do {
-            
-            let fetchDescriptor = FetchDescriptor<SavedMood>()
-            let fetchedMoods = try context.fetch(fetchDescriptor)
-            let seededMoods = MoodSeeder.generate() // FIXME: should remove this in production...
-            
-            var moods = Dictionary(uniqueKeysWithValues: seededMoods.map { ($0.date.normalizedDate, $0.mood) })
-            
-            moods.merge(fetchedMoods.map { ($0.date.normalizedDate, $0.mood) }) { _, fetchedMood in
-                    fetchedMood
-                }
-            
-            self.savedMoods = moods
-            
-        } catch {
-            // FIXME: should handle errors
-            print(error.localizedDescription)
-        }
-    }
+    // MARK: navigating states of mind
     
     func moodForDay(_ date: Date) -> Mood {
+        guard let statesOfMind = savedStatesOfMind[date.normalizedDate] else {
+            return .unknown
+        }
         
-        savedMoods[date.normalizedDate] ?? .unknown
+        guard let stateOfMind = statesOfMind.first else {
+            return .unknown
+        }
+        
+        return Mood.nearest(to: stateOfMind.valence)
     }
-
+    
     
     // MARK: navigating the calendar
     
