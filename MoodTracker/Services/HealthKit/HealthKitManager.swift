@@ -15,7 +15,7 @@ class HealthKitManager {
     
     static let shared: HealthKitManager = .init()
     
-    let healthStore: HKHealthStore
+    private let healthStore: HKHealthStore
     
     // MARK: - Initializer
     private init() {
@@ -26,6 +26,8 @@ class HealthKitManager {
         
         self.healthStore = HKHealthStore()
         
+        self._stateOfMindData = HealthKitManagerPreview.generateMockHKStateOfMindData()
+        
         self.startStateOfMindObservation()
     }
     
@@ -33,20 +35,30 @@ class HealthKitManager {
     // MARK: - Properties
     
     private static let StateOfMindType = HKObjectType.stateOfMindType()
-    let allTypes: Set = [
+    private let allTypes: Set = [
         StateOfMindType
     ]
     
     private(set) var authenticated = false
     var isAuthenticated: Bool {
-        authenticated == true
+        let authorizationStatus = checkAuthorizationStatusForStateOfMind()
+        return authenticated == true || authorizationStatus == .sharingAuthorized
     }
-    var trigger = false
     
     private var anchor: HKQueryAnchor?
     private var isObservingInTheBackground = false
     
-    var stateOfMindData: [HKStateOfMind] = []
+    private var _stateOfMindData: [HKStateOfMind] = []
+    
+    var stateOfMindData: [StateOfMindEntry] {
+        get {
+            _stateOfMindData.map(StateOfMindEntry.init)
+        }
+        set {
+            _stateOfMindData = newValue.map { $0.makeHealthKitStateOfMind() }
+        }
+    }
+    
 }
 
 
@@ -56,26 +68,40 @@ extension HealthKitManager {
     
     // MARK: authorizations
     
-    private func requestAuthorization() async throws {
-        
-        do {
-            if HKHealthStore.isHealthDataAvailable() {
-                
-                try await healthStore.requestAuthorization(toShare: allTypes, read: allTypes)
-                self.authenticated = true
-                self.startStateOfMindObservation()
-                
-            } else {
-                throw HealthKitError.healthKitNotAvailable
-            }
-        } catch {
+    func requestAuthorization() async throws {
+    
+    do {
+        if HKHealthStore.isHealthDataAvailable() {
             
-            throw HealthKitError.permissionDenied
+            logger.info("\n\(#function): HealthKit is available ✅")
+            
+            try await healthStore.requestAuthorization(toShare: allTypes, read: allTypes)
+            self.authenticated = true
+            self.startStateOfMindObservation()
+            
+            logger.info("\n\(#function): HealthKit Authentication success ✅")
+            
+        } else {
+            throw HealthKitError.healthKitNotAvailable
         }
+    } catch {
+        
+        throw HealthKitError.permissionDenied
     }
+}
     
     private func checkAuthorizationStatusForStateOfMind() -> HKAuthorizationStatus {
         healthStore.authorizationStatus(for: HealthKitManager.StateOfMindType)
+    }
+    
+    private func requestAuthorizationIfNeeded() async throws {
+        let status = checkAuthorizationStatusForStateOfMind()
+        
+        guard status == .notDetermined else {
+            return
+        }
+        
+        try await requestAuthorization()
     }
     
     
@@ -120,15 +146,17 @@ extension HealthKitManager {
     }
     
     func save(
-        for kind: HKStateOfMind.Kind,
-        onDate date: Date = .now,
-        withValence valence: Double,
-        labels: [HKStateOfMind.Label],
-        associations: [HKStateOfMind.Association],
-        andMetaData metaData: [String: Any]? = nil
+        _ entry: StateOfMindEntry
     ) async throws {
         
-        let sample = try await self.createHKStateOfMindSample(for: kind, onDate: date, withValence: valence, labels: labels, associations: associations, andMetaData: metaData)
+        let sample: HKStateOfMind = try await self.createHKStateOfMindSample(
+            for: entry.kind.healthKitKind,
+            onDate: entry.date,
+            withValence: entry.mood.valence,
+            labels: entry.labels.map(\.healthKitLabel),
+            associations: entry.associations.map(\.healthKitAssociation),
+            andMetaData: entry.metadata
+        )
         
         do {
             try await healthStore.save(sample)
@@ -152,7 +180,14 @@ extension HealthKitManager {
     
     // MARK: Reading State of Mind
     
-    func startStateOfMindObservation() {
+    func loadStateOfMindData() async throws {
+        try await requestAuthorizationIfNeeded()
+        try await fetchStateOfMindUpdates()
+    }
+    
+    private func startStateOfMindObservation() {
+        
+        logger.info("\n\(#function) called.")
         
         guard !isObservingInTheBackground else { return }
         
@@ -171,7 +206,7 @@ extension HealthKitManager {
                 do {
                     try await self?.fetchStateOfMindUpdates()
                 } catch {
-                    logger.error("Failed to fetch State of Mind updates: \(error.localizedDescription)")
+                    logger.error("\(#function): Failed to fetch State of Mind updates: \(error.localizedDescription)")
                 }
             }
         }
@@ -182,6 +217,9 @@ extension HealthKitManager {
             do {
                 try await healthStore.enableBackgroundDelivery(for: type, frequency: .immediate)
                 isObservingInTheBackground = true
+                
+                logger.info("\n\(#function): background delivery enabled! ✅")
+                
             } catch {
                 logger.error("Failed to enable background delivery: \(error.localizedDescription)")
                 isObservingInTheBackground = false
@@ -197,7 +235,11 @@ extension HealthKitManager {
             try await self.requestAuthorization()
         }
         
-        logger.info("\n\(#function): Authorization \(authorizationStatus == .sharingAuthorized ? "Success ✅" : "Failed ❌")")
+        let updatedStatus = checkAuthorizationStatusForStateOfMind()
+        
+        logger.info(
+            "\n\(#function): Authorization \(updatedStatus == .sharingAuthorized ? "Success ✅" : "Failed ❌")"
+        )
         
         let descriptor = HKAnchoredObjectQueryDescriptor(
             predicates: [.stateOfMind()],
@@ -215,10 +257,10 @@ extension HealthKitManager {
             logger.info("\n\(#function): deletedSamples: \(deletedSamples.count), First: \(deletedSamples.first)")
             
             await MainActor.run {
-                stateOfMindData.removeAll { existing in
+                _stateOfMindData.removeAll { existing in
                     deletedSamples.contains { $0.uuid == existing.uuid }
                 }
-                stateOfMindData.append(contentsOf: newSamples)
+                _stateOfMindData.append(contentsOf: newSamples)
             }
         }
     }
@@ -231,3 +273,5 @@ extension EnvironmentValues {
     
     @Entry var healthKitManager: HealthKitManager = .shared
 }
+
+

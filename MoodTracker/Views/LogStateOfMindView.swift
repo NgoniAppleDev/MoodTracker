@@ -12,6 +12,7 @@ struct LogStateOfMindView: View {
     
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(LogStateOfMindViewModel.self) private var viewModel
+    @Environment(\.dismiss) private var dismiss
     
     var selectedMood: Mood? = nil
     var selectedDate: Date = .now
@@ -91,6 +92,7 @@ extension LogStateOfMindView {
         Button {
             Task {
                 await viewModel.saveMood(selectedMood, onDate: selectedDate)
+                dismiss()
             }
         } label: {
             Text("Save")

@@ -55,4 +55,8 @@ enum HealthKitError: LocalizedError {
             "Try again."
         }
     }
+    
+    var completeMessage: String {
+        "\(failureReason)\n\n\(recoverySuggestion)"
+    }
 }

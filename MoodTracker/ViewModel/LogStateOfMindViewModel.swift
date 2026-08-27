@@ -10,8 +10,17 @@ import Observation
 import SwiftUI
 import SwiftData
 
+enum LogStateOfMindState {
+    case idle
+    case loading
+    case loaded
+    case failed
+}
+
 @Observable
 class LogStateOfMindViewModel {
+    
+    // MARK: - Properties
     
     private let healthKitManager: HealthKitManager
     
@@ -29,6 +38,19 @@ class LogStateOfMindViewModel {
         Mood.interpolatedColor(for: moodValence)
     }
     
+    private(set) var state: LogStateOfMindState = .idle {
+        didSet {
+            if state == .failed {
+                self.isShowingError = true
+            }
+        }
+    }
+    var error: HealthKitError? = nil
+    var isShowingError: Bool = false
+    
+    
+    // MARK: - Methods
+    
     init(healthKitManager: HealthKitManager) {
         self.healthKitManager = healthKitManager
     }
@@ -43,19 +65,24 @@ class LogStateOfMindViewModel {
     }
     
     @discardableResult
-    func saveMood(_ mood: Mood? = nil, onDate date: Date = .now) async -> Bool {
+    func saveMood(_ mood: Mood? = nil, onDate date: Date = .now, for kind: StateOfMindKind = .momentaryEmotion) async -> Bool {
+        
+        state = .loading
         
         do {
-            try await healthKitManager.save(
-                for: .momentaryEmotion,
-                onDate: date,
-                withValence: self.moodValence,
-                labels: [],
-                associations: []
-            )
+            let entry = StateOfMindEntry(date: date, kind: kind, mood: selectedMood, labels: [], associations: [])
+            
+            try await healthKitManager.save(entry)
+            
+            state = .loaded
             
             return true
+        } catch let error as HealthKitError {
+            self.error = error
+            state = .failed
+            return false
         } catch {
+            state = .failed
             return false
         }
     }

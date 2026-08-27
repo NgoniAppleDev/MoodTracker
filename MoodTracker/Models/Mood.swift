@@ -74,12 +74,6 @@ enum Mood: String, CaseIterable, Hashable, Codable, Identifiable {
             Image(.wink)
         }
     }
-
-}
-
-
-
-extension Mood {
     
     var valence: Double {
         switch self {
@@ -94,6 +88,14 @@ extension Mood {
         case .extremelyPleasant:    1.0
         case .unknown:              0.0
         }
+    }
+
+}
+
+extension Mood {
+    
+    init(valence: Double) {
+        self = Self.nearest(to: valence)
     }
     
     static func nearest(to valence: Double) -> Mood {
@@ -118,4 +120,5 @@ extension Mood {
         
         return colors[lowerIndex].interpolated(to: colors[upperIndex], fraction: fraction)
     }
+    
 }

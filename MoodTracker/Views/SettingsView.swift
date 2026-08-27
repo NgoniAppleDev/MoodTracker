@@ -29,7 +29,9 @@ struct SettingsView: View {
                         Spacer()
                         
                         Button(healthKitManager.isAuthenticated ? "Connected" : "Disconnected") {
-                            healthKitManager.trigger.toggle()
+                            Task {
+                                try? await healthKitManager.requestAuthorization()
+                            }
                         }
                         .tint(Color.accent)
                         .disabled(healthKitManager.isAuthenticated)

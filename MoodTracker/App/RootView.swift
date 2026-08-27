@@ -20,27 +20,6 @@ struct RootView: View {
     
     var body: some View {
         MainTabView(healthKitManager: healthKitManager)
-            .healthDataAccessRequest(
-                store: healthKitManager.healthStore,
-                shareTypes: healthKitManager.allTypes,
-                readTypes: healthKitManager.allTypes,
-                trigger: healthKitManager.trigger,
-                completion: { result in
-                    switch result {
-                    case .success(_):
-                        Task { @MainActor in
-                            healthKitManager.startStateOfMindObservation()
-                        }
-                    case .failure(_):
-                        break
-                    }
-                }
-            )
-            .task {
-                if HKHealthStore.isHealthDataAvailable() {
-                    healthKitManager.trigger.toggle()
-                }
-            }
             .environment(\.healthKitManager, healthKitManager)
     }
 }

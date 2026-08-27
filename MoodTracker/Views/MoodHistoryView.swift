@@ -22,6 +22,9 @@ struct MoodHistoryView: View {
                 Spacer()
             }
             .padding()
+            .task {
+                await viewModel.load()
+            }
             .sheet(item: $tappedDate) { the_TappedDate in
                 NavigationStack {
                     LogStateOfMindView(selectedMood: the_TappedDate.mood, selectedDate: the_TappedDate.date)
@@ -141,5 +144,7 @@ extension MoodHistoryView {
 
 #Preview {
     MoodHistoryView()
+        .environment(ReadStateOfMindViewModel(healthKitManager: .shared))
+        .environment(LogStateOfMindViewModel(healthKitManager: .shared))
         .environment(\.healthKitManager, .shared)
 }

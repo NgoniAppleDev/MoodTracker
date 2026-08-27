@@ -19,6 +19,13 @@ enum DateChangeFactor {
     case year
 }
 
+enum ReadStateOfMindState {
+    case idle
+    case loading
+    case loaded
+    case failed
+}
+
 @Observable
 class ReadStateOfMindViewModel {
     
@@ -26,8 +33,8 @@ class ReadStateOfMindViewModel {
     
     private let healthKitManager: HealthKitManager
 
-    private var savedStatesOfMind: [Date: [HKStateOfMind]] {
-        Dictionary(grouping: healthKitManager.stateOfMindData, by: { $0.startDate.normalizedDate })
+    private var savedStatesOfMind: [Date: [StateOfMindEntry]] {
+        Dictionary(grouping: healthKitManager.stateOfMindData, by: { $0.date.normalizedDate })
     }
     
     var selectedDate = Date() {
@@ -56,17 +63,27 @@ class ReadStateOfMindViewModel {
         Calendar.current.isDate(selectedDate, equalTo: Date(), toGranularity: .month)
     }
     
+    private(set) var state: ReadStateOfMindState = .idle {
+        didSet {
+            if state == .failed {
+                self.isShowingError = true
+            }
+        }
+    }
+    private(set) var error: HealthKitError? = nil
+    var isShowingError: Bool = false
+    
     
     // MARK: - Initializer
     
     init(healthKitManager: HealthKitManager) {
         self.healthKitManager = healthKitManager
+        
         updateMonthDays()
     }
     
     
     // MARK: - Methods
-    
     
     // MARK: navigating states of mind
     
@@ -75,11 +92,40 @@ class ReadStateOfMindViewModel {
             return .unknown
         }
         
-        guard let stateOfMind = statesOfMind.first else {
+        if let dailyMood = statesOfMind
+            .filter({ $0.kind == .dailyMood })
+            .max(by: { $0.date < $1.date }) {
+            return dailyMood.mood
+        }
+        
+        let momentaryEmotions = statesOfMind.filter {
+            $0.kind == .momentaryEmotion
+        }
+        
+        guard !momentaryEmotions.isEmpty else {
             return .unknown
         }
         
-        return Mood.nearest(to: stateOfMind.valence)
+        let averageValence = momentaryEmotions
+            .map(\.mood.valence)
+            .reduce(0, +) / Double(momentaryEmotions.count)
+        
+        return .nearest(to: averageValence)
+    }
+    
+    func load() async {
+        state = .idle
+        error = nil
+        
+        do {
+            try await healthKitManager.loadStateOfMindData()
+            state = .loaded
+        } catch let error as HealthKitError {
+            self.error = error
+            state = .failed
+        } catch {
+            state = .failed
+        }
     }
     
     
